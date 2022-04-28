@@ -28,7 +28,7 @@
                             <td>{{ item.complete }}</td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <button class="btn btn-primary">편집</button>
+                                    <button class="btn btn-warning" @click="editTodo(item.id)">수정</button>
                                     <button class="btn btn-danger" @click="deleteTodo(item.id)">삭제</button>
                                 </div>
                             </td>
@@ -56,7 +56,7 @@
                 fetch('http://mjleemj.dothome.co.kr/data_read.php')
                     .then(res => res.json())
                     .then(data => {
-                        console.log(data.result);
+                        // console.log(data.result);
                         todos.value = data.result;
                     })
                     .catch()
@@ -64,11 +64,11 @@
             getInfo();
 
             const deleteTodo = (id) => {
-                console.log(id);
+                // console.log(id);
                 fetch(`http://mjleemj.dothome.co.kr/data_delete.php?id=${id}`)
                     .then(res => res.json())
                     .then(data => {
-                        console.log(data);
+                        // console.log(data);
                         if(data.result == 1){
                             getInfo();
                         }else{
@@ -78,9 +78,18 @@
             }
 
             const moveDetail = (id) => {
-                console.log(id);
+                // console.log(id);
                 router.push({
                     name: 'Detail',
+                    params: {
+                        id : id
+                    }
+                })
+            }
+
+            const editTodo = (id) => {
+                router.push({
+                    name: 'Update',
                     params: {
                         id : id
                     }
@@ -89,7 +98,8 @@
             return {
                 todos,
                 deleteTodo,
-                moveDetail
+                moveDetail,
+                editTodo
             }
         }
 

@@ -20,7 +20,7 @@ const router = createRouter({
         component: CreateView
     },
     {
-        path: '/update',
+        path: '/update/:id',
         name: 'Update',
         component: UpdateView
     },
@@ -43,3 +43,5 @@ const router = createRouter({
 });
 
 export default router;
+
+// :id 에서 :는 변수를 받겠다는 의미
