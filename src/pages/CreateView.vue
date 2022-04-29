@@ -20,7 +20,7 @@
 
                     <div class="btn-group" role="group">
                         <button type="submit" class="btn btn-success">확인</button>
-                        <button type="button" class="btn btn-warning">취소</button>
+                        <button type="button" class="btn btn-warning" @click="moveList">취소</button>
                     </div>
                 </form>
             </div>
@@ -51,16 +51,26 @@
                 .then(data => {
                     if(data.result == 1){
                         // List 화면으로 이동
-                        router.push('/list');
+                    router.push({
+                        name: 'List'
+                })
                     }else{
                         console.log('서버에서 자료를 불러오는 데 실패했습니다.')
                     }
                 })
                 .catch()
             }
+
+            const moveList = () => {
+                router.push({
+                    name: 'List'
+                })
+            }
+
             return{
                 todo,
-                onSubmit
+                onSubmit,
+                moveList
             }
         }
     
