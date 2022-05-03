@@ -44,39 +44,22 @@
       </div>
     </div>
     <!-- 안내창 -->
-    <ToastBox :message="toastMessage" v-if="showToast" />
+    <!-- <ToastBox :message="toastMessage" v-if="showToast" /> -->
   </div>
 </template>
 
 <script>
-import { ref, reactive, onUnmounted } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
-import ToastBox from "@/components/ToastBox.vue";
+// import ToastBox from "@/components/ToastBox.vue";
+import { useToast } from "@/composables/toast.js";
+
 export default {
-  components: {
-    ToastBox,
-  },
+  // components: {
+  //   ToastBox,
+  // },
   setup() {
-    const showToast = ref(false);
-
-    const toastMessage = ref("");
-
-    // 타이머로 제어하기 위한 것
-    const toastId = ref(null);
-    const triggerToast = (msg) => {
-      console.log(msg);
-      toastMessage.value = msg;
-      showToast.value = true;
-      toastId.value = setTimeout(() => {
-        showToast.value = false;
-        toastMessage.value = "";
-        clearTimeout(toastId);
-      }, 2000);
-    };
-
-    onUnmounted(() => {
-      clearTimeout(toastId.value);
-    });
+    const { toastMessage, showToast, triggerToast } = useToast();
 
     // 값이 변하는 것을 계속 유지.
     const todo = reactive({

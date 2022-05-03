@@ -60,40 +60,22 @@
       </form>
     </div>
     <!-- 안내창 -->
-    <ToastBox :message="toastMessage" v-if="showToast" />
+    <!-- <ToastBox :message="toastMessage" v-if="showToast" /> -->
   </div>
 </template>
 
 <script>
-import { reactive, ref, onUnmounted, computed } from "vue";
+import { reactive, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import ToastBox from "@/components/ToastBox.vue";
+// import ToastBox from "@/components/ToastBox.vue";
+import { useToast } from "@/composables/toast.js";
 import _ from "lodash";
 export default {
-  components: {
-    ToastBox,
-  },
+  // components: {
+  //   ToastBox,
+  // },
   setup() {
-    const showToast = ref(false);
-
-    const toastMessage = ref("");
-
-    // 타이머로 제어하기 위한 것
-    const toastId = ref(null);
-    const triggerToast = (msg) => {
-      console.log(msg);
-      toastMessage.value = msg;
-      showToast.value = true;
-      toastId.value = setTimeout(() => {
-        showToast.value = false;
-        toastMessage.value = "";
-        clearTimeout(toastId);
-      }, 2000);
-    };
-
-    onUnmounted(() => {
-      clearTimeout(toastId.value);
-    });
+    const { toastMessage, showToast, triggerToast } = useToast();
 
     const route = useRoute();
     const router = useRouter();
@@ -207,10 +189,10 @@ export default {
       todo,
       onSubmit,
       moveList,
-      toastMessage,
-      showToast,
       todoUpdate,
       toggleTodo,
+      toastMessage,
+      showToast,
     };
   },
 };

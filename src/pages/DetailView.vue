@@ -3,9 +3,18 @@
     <div class="card-header">Todo</div>
     <div class="card-body">
       <h4 class="card-title">{{ todo.title }}</h4>
-      <p class="card-text">{{ todo.body }}</p>
-      <p class="card-text">{{ todo.complete }}</p>
-      <p class="card-text">{{ todo.body }}</p>
+      <h3>내용</h3>
+      <p class="card-text">
+        <span>
+          {{ todo.body }}
+        </span>
+      </p>
+      <h3>완료여부</h3>
+      <p class="card-text">
+        <span>
+          {{ todo.complete === "0" ? "진행중" : "완료" }}
+        </span>
+      </p>
       <div class="btn-group" role="group" aria-label="">
         <button
           type="button"

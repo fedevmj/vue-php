@@ -12,6 +12,16 @@
         <button class="btn btn-success bt-write" @click="writeTodo">
           글작성
         </button>
+
+        <!-- 검색필드 -->
+        <div class="input-group mr-2 search">
+          <input
+            class="form-control"
+            placeholder="검색어를 입력하세요."
+            v-model="searchText"
+            @keyup.enter="getTotalSearch()"
+          />
+        </div>
       </div>
       <div class="card-body">
         <table class="table">
@@ -67,7 +77,7 @@
     </div>
 
     <nav aria-label="Page navigation example">
-      <ul class="pagination">
+      <ul class="pagination" v-show="page_total > 1">
         <!-- 현재 페이지가 1페이지일 때 hidden -->
         <li class="page-item" v-show="page_now !== 1">
           <a class="page-link" href="#" @click="getInfo(page_now - 1)"
@@ -94,7 +104,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import ModalWin from "@/components/ModalWin.vue";
 
@@ -123,7 +133,7 @@ export default {
       fetch(`http://mjleemj.dothome.co.kr/data_delete.php?id=${deleteId.value}`)
         .then((res) => res.json())
         .then((data) => {
-          // console.log(data);
+          console.log(data);
           if (data.result == 1) {
             deleteId.value = null;
             // 닫기 in 모달창
@@ -142,12 +152,17 @@ export default {
 
     const getInfo = (_page = 1) => {
       page_now.value = _page;
+
+      if (searchActive.value == true) {
+        searchTodo(page_now.value);
+        return;
+      }
       fetch(
         `http://mjleemj.dothome.co.kr/data_read.php?page_now=${page_now.value}&data_count=${data_count}`
       )
         .then((res) => res.json())
         .then((data) => {
-          // console.log(data.result);
+          console.log(data.result);
           todos.value = data.result;
           // todos 종류는 배열. for 이용해서 접근해서 complete가 0이냐 1이냐에 따라 그 값을 반영하는 객체를 추가.
           for (let item of todos.value) {
@@ -156,7 +171,7 @@ export default {
             } else {
               item.active = true;
             }
-            console.log(item);
+            // console.log(item);
           }
         })
         .catch();
@@ -237,6 +252,70 @@ export default {
 
     getTotal();
 
+    // 현재 생성된 목록이 검색으로 인한 것인지 아니면 검색없이 일반적인 목록인지를 구분하는 변수가 필요.
+    const searchActive = ref(false);
+
+    // 검색 기능 구현
+    const searchText = ref("");
+    let searchTimer = null;
+    // searchText 변화 감시
+    watch(searchText, () => {
+      clearTimeout(searchTimer);
+
+      if (searchText.value !== "") {
+        searchActive.value = true;
+        searchTimer = setTimeout(() => {
+          // 검색어와 동일한 내용을 php를 이용해서 전체 개수를 파악한다 (data_total_search.php)
+          getTotalSearch();
+        }, 2000);
+      } else {
+        searchActive.value = false;
+        getTotal();
+      }
+    });
+
+    // 검색에 해당하는 총 목록 개수를 가지고 온다.
+    const getTotalSearch = () => {
+      clearTimeout(searchTimer);
+      fetch(
+        `http://mjleemj.dothome.co.kr/data_total_search.php?title=${searchText.value}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          // 검색어에 해당하는 데이터 개수
+          data_total.value = data.total;
+          console.log(data_total.value);
+          // 페이지네이션 갱신
+          page_total.value = Math.ceil(data_total.value / data_count);
+          // 시작페이지는 1페이지로 세팅
+          page_now.value = 1;
+          // 실제 내용 가져오기
+          searchTodo();
+        })
+        .catch();
+    };
+
+    // 검색에 해당하는 내용을 목록으로 가지고 오는 php를 실행
+    const searchTodo = () => {
+      fetch(
+        `http://mjleemj.dothome.co.kr/data_read_search.php?page_now=${page_now.value}&data_count=${data_count}&title=${searchText.value}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          // 검색된 배열을 받아서 todos 업데이트
+          todos.value = data.result;
+          // complete 값에 따라 처리
+          for (let item of todos.value) {
+            if (item.complete === "0") {
+              item.active = false;
+            } else {
+              item.active = true;
+            }
+          }
+        })
+        .catch();
+    };
+
     return {
       todos,
       deleteTodo,
@@ -251,6 +330,8 @@ export default {
       openModal,
       showModal,
       toggleTodo,
+      searchText,
+      getTotalSearch,
     };
   },
 };
@@ -274,5 +355,10 @@ export default {
 .active {
   background-color: hotpink;
   color: #fff;
+}
+
+.search {
+  width: 50%;
+  float: right;
 }
 </style>
