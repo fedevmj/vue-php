@@ -3,7 +3,11 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Delete TODO</h5>
+          <h5 class="modal-title">
+            <!-- Delete TODO -->
+            <slot name="title"></slot>
+          </h5>
+
           <button
             type="button"
             class="close"
@@ -15,7 +19,10 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>내용을 삭제하시겠습니까?</p>
+          <p>
+            <!-- 내용을 삭제하시겠습니까? -->
+            <slot name="body"></slot>
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger" @click="onDelete">

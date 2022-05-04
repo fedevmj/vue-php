@@ -37,11 +37,16 @@
     </div>
   </div>
 
-  <ModalWin
-    v-if="showModal"
-    @close-modal="closeModal"
-    @delete-modal="deleteTodo"
-  />
+  <teleport to="#popup">
+    <ModalWin
+      v-if="showModal"
+      @close-modal="closeModal"
+      @delete-modal="deleteTodo"
+    >
+      <template v-slot:title>내용삭제</template>
+      <template v-slot:body>내용을 삭제하시겠습니까?</template>
+    </ModalWin>
+  </teleport>
 </template>
 
 <script>
